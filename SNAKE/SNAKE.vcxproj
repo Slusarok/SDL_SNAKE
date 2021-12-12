@@ -19,15 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\snake_\ConsoleApplication10\main.cpp" />
-    <ClCompile Include="..\..\snake_\ConsoleApplication10\snake.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="snake.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sdl_check.hpp" />
     <ClInclude Include="snake.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

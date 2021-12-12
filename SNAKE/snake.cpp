@@ -1,21 +1,56 @@
 #include "snake.hpp"
 #include "sdl_check.hpp"
+#include <SDL_mixer.h>
+#include "windows.h"
+#include <SDL_image.h>
+#include <string>
 
 Snake::Snake()
 {
-  SDL_Surface* bg = NULL;
-  auto res = SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_CHECK(res == 0, "SDL_Init");
-  SDL_CreateWindowAndRenderer(Width, Height, SDL_WINDOW_BORDERLESS, &window, &renderer);
-  SDL_CHECK(window, "SDL_CreateWindowAndRenderer");
-  SDL_CHECK(renderer, "SDL_CreateWindowAndRenderer");
-  SDL_SetWindowPosition(window, 65, 126);
-  auto surface = SDL_LoadBMP("sprites.bmp");
-  SDL_CHECK(surface, "SDL_LoadBMP(\"sprites.bmp\")");
-  sprites = SDL_CreateTextureFromSurface(renderer, surface);
-  SDL_CHECK(sprites, "SDL_CreateTextureFromSurface");
-  SDL_FreeSurface(surface);
+    bool success = true;
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags))
+    {
+        printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+        success = false;
+    }
+    
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
+    {
+        printf("SDL could not initialize! SDL Error: %s\n", SDL_GetError());
+        success = false;
+    }
 
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        success = false;
+    }
+    void SDL_MixAudioFormat(Uint8 * dst,
+    const Uint8 * src,
+    SDL_AudioFormat format,
+    Uint32 len, int volume);
+    auto res = SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_CHECK(res == 0, "SDL_Init");
+    SDL_DisplayMode displayMode;
+    int request = SDL_GetDesktopDisplayMode(0, &displayMode);
+    SDL_CreateWindowAndRenderer(Width, Height, SDL_WINDOW_SHOWN, &window, &renderer);
+    SDL_CHECK(window, "SDL_CreateWindowAndRenderer");
+    SDL_CHECK(renderer, "SDL_CreateWindowAndRenderer");
+    SDL_SetWindowPosition(window, 300, 150);
+    SDL_SetWindowTitle(window, "Score: 0");
+    auto surface = SDL_LoadBMP("smake.bmp");
+    SDL_CHECK(surface, "SDL_LoadBMP(\"smake.bmp\")");
+    sprites = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_CHECK(sprites, "SDL_CreateTextureFromSurface");
+    SDL_FreeSurface(surface);
+    
+    background_RECT.x = 0;
+    background_RECT.y = 0;
+    background_RECT.w = displayMode.w;
+    background_RECT.h = displayMode.h;
+    
+    
   segmentsList.push_back(std::make_pair(5, 5));
   segmentsList.push_back(std::make_pair(5, 6));
   segmentsList.push_back(std::make_pair(4, 6));
@@ -27,6 +62,12 @@ void Snake::generateFruit()
   auto done = false;
   do
   {
+    score++;
+    std::string tmp = std::to_string(score);
+    char const* num_char =  tmp.c_str();
+    SDL_SetWindowTitle(window, num_char);
+    hrum = Mix_LoadWAV("2.wav");
+    Mix_PlayChannel(1, hrum, 0) == 1;
     fruitX = rand() % (Width / 64);
     fruitY = rand() % (Height / 64);
     done = true;
@@ -47,14 +88,24 @@ Snake::~Snake()
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
+  Mix_Quit();
+  IMG_Quit();
+  
 }
 
 int Snake::exec()
 {
+    music = Mix_LoadMUS("1.mp3");
+    if (Mix_PlayMusic(music, -1) == -1) {
+        printf("Mix_PlayMusic: %s\n", Mix_GetError());
+    }
   auto oldTick = SDL_GetTicks();
+  SDL_Surface* bg = SDL_LoadBMP("bg.bmp");
+  SDL_Texture* bg_texture = SDL_CreateTextureFromSurface(renderer, bg);
   for (auto done = false; !done;)
   {
     SDL_Event e;
+    
     if (SDL_PollEvent(&e))
     {
       switch (e.type)
@@ -87,17 +138,24 @@ int Snake::exec()
         break;
       }
     }
-	SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    
+    //SDL_SetRenderDrawColor(renderer, 0x00, 0x7f, 0x00, 0xff);
     SDL_RenderClear(renderer);
     auto currentTick = SDL_GetTicks();
     for (auto t = oldTick; t < currentTick; ++t)
       if (!tick())
         return 1;
     oldTick = currentTick;
+    SDL_RenderCopy(renderer, bg_texture, NULL, NULL);
     draw();
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer); 
   }
   return 0;
+}
+
+int Snake::GetScore()
+{
+    return score;
 }
 
 bool Snake::tick()
@@ -108,15 +166,29 @@ bool Snake::tick()
     p.first += dx;
     p.second += dy;
     if (p.first < 0 || p.first >= Width / 64 ||
-        p.second < 0 || p.second >= Height / 64)
-      return false;
-    for (const auto &segment: segmentsList)
-      if (p == segment)
+        p.second < 0 || p.second >= Height / 64) {
+        gg = Mix_LoadMUS("gg.mp3");
+        if (Mix_PlayMusic(gg, 1) == 1) {
+            printf("Mix_PlayMusic: %s\n", Mix_GetError());
+        }
+        Sleep(2000);
         return false;
+    }
+    for (const auto &segment: segmentsList)
+        if (p == segment) {
+            gg = Mix_LoadMUS("gg.mp3");
+            if (Mix_PlayMusic(gg, 1) == 1) {
+                printf("Mix_PlayMusic: %s\n", Mix_GetError());
+            }
+            Sleep(2000);
+            return false;
+        }
     segmentsList.push_front(p);
-    if (p.first != fruitX || p.second != fruitY)
-      segmentsList.pop_back();
-    else
+    if (p.first != fruitX || p.second != fruitY) {
+        
+        segmentsList.pop_back();
+    }
+    else   
       generateFruit();
   }
   return true;
@@ -230,4 +302,5 @@ void Snake::draw()
   dest.x = fruitX * 64;
   dest.y = fruitY * 64;
   SDL_RenderCopyEx(renderer, sprites, &src, &dest, 0, nullptr, SDL_FLIP_NONE);
+
 }

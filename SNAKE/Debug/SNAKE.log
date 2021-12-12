@@ -1,5 +1,1 @@
-﻿  main.cpp
-c1xx : fatal error C1083: Не удается открыть файл источник: ..\..\snake_\ConsoleApplication10\main.cpp: No such file or directory,
-  snake.cpp
-c1xx : fatal error C1083: Не удается открыть файл источник: ..\..\snake_\ConsoleApplication10\snake.cpp: No such file or directory,
-  Создание кода...
+﻿  SNAKE.vcxproj -> D:\фугас\SDL_SNAKE\Debug\SNAKE.exe
