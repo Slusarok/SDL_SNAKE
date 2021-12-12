@@ -1,5 +1,5 @@
-﻿  snake.cpp
-C:\Users\Nazarius\source\repos\snake_\ConsoleApplication10\snake.cpp(55,33): warning C4553: "==": результат выражения не используется; вы хотели использовать "="?
-C:\Users\Nazarius\source\repos\snake_\ConsoleApplication10\snake.cpp(212,28): warning C4244: =: преобразование "const int" в "float", возможна потеря данных
-C:\Users\Nazarius\source\repos\snake_\ConsoleApplication10\snake.cpp(226,26): warning C4244: =: преобразование "const int" в "float", возможна потеря данных
-  SNAKE.vcxproj -> C:\Users\Nazarius\source\repos\SNAKE\Debug\SNAKE.exe
+﻿  main.cpp
+c1xx : fatal error C1083: Не удается открыть файл источник: ..\..\snake_\ConsoleApplication10\main.cpp: No such file or directory,
+  snake.cpp
+c1xx : fatal error C1083: Не удается открыть файл источник: ..\..\snake_\ConsoleApplication10\snake.cpp: No such file or directory,
+  Создание кода...

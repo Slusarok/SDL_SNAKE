@@ -23,10 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\snake_\ConsoleApplication10\snake.hpp">
+    <ClInclude Include="sdl_check.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\snake_\ConsoleApplication10\sdl_check.hpp">
+    <ClInclude Include="snake.hpp">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
